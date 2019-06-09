@@ -64,7 +64,14 @@ class Entity:
         libtcod.path_compute(my_path, self.x, self.y, target.x, target.y)
 
         # Check if the path exists, and in this case, also the path is shorter than 25 tiles
-        # The path six = x
+        # The path size matters if you want the monster to use alternative longer paths (for example through other rooms) if for example the player is in a corridor
+        # It makes sense to keep path size relatively low to keep the monsters from running around the map if there's an alternative path really far away
+        if not libtcod.path_is_empty(my_path) and libtcod.path_size(my_path) < 25:
+            # Find the next coordinates in the computed full path
+            x, y = libtcod.path_walk(my_path, True)
+            if x or y:
+                # Set self's coordinates to the next path tile
+                self.x = x
                 self.y = y
         else:
             # Keep the old move function as a backup so that if there are no paths (for example another monster blocks a corridor)
